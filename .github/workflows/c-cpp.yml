@@ -7,6 +7,49 @@ on:
     branches: [ "master" ]
 
 jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v3
+      with:
+        version: '6.5.0'
+    - name: Build
+      run: |
+        mkdir build
+        cd build
+        cmake .. -DCMAKE_BUILD_TYPE=Release
+        cmake --build . --config Release
+    - name: Upload Windows Build
+      uses: actions/upload-artifact@v3
+      with:
+        name: NetSecOps-Windows
+        path: build/Release/NetSecOps.exe
+
+  build-macos:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v3
+      with:
+        version: '6.5.0'
+    - name: Build
+      run: |
+        mkdir build
+        cd build
+        cmake .. -DCMAKE_BUILD_TYPE=Release
+        make
+    - name: Deploy
+      run: |
+        macdeployqt build/NetSecOps.app
+    - name: Upload macOS Build
+      uses: actions/upload-artifact@v3
+      with:
+        name: NetSecOps-macOS
+        path: build/NetSecOps.app
+        
   build:
 
     runs-on: ubuntu-latest
