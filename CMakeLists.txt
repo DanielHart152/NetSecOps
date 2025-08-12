@@ -117,8 +117,17 @@ target_compile_definitions(NetSecOps PRIVATE
     QT_QML_DEBUG
 )
 
-# Set C++17 compiler flags for MSVC
+# Platform-specific configurations
 if(MSVC)
     target_compile_options(NetSecOps PRIVATE /Zc:__cplusplus)
 endif()
 
+if(APPLE)
+    set_target_properties(NetSecOps PROPERTIES
+        MACOSX_BUNDLE TRUE
+        MACOSX_BUNDLE_GUI_IDENTIFIER com.netsecops.app
+        MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
+        MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
+        MACOSX_BUNDLE_BUNDLE_NAME "NetSecOps"
+    )
+endif()

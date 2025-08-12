@@ -1,0 +1,66 @@
+name: Build NetSecOps
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-macos:
+    runs-on: macos-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v3
+      with:
+        version: '6.5.0'
+        modules: 'qtquickcontrols2'
+    
+    - name: Configure CMake
+      run: cmake -B build -DCMAKE_BUILD_TYPE=Release
+    
+    - name: Build
+      run: cmake --build build --config Release
+    
+    - name: Create DMG
+      run: |
+        cd build
+        macdeployqt NetSecOps.app -dmg
+    
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: NetSecOps-macOS
+        path: build/NetSecOps.dmg
+
+  build-windows:
+    runs-on: windows-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v3
+      with:
+        version: '6.5.0'
+        modules: 'qtquickcontrols2'
+    
+    - name: Configure CMake
+      run: cmake -B build -DCMAKE_BUILD_TYPE=Release
+    
+    - name: Build
+      run: cmake --build build --config Release
+    
+    - name: Deploy Qt
+      run: |
+        cd build/Release
+        windeployqt NetSecOps.exe
+    
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: NetSecOps-Windows
+        path: build/Release/
